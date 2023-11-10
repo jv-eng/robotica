@@ -22,10 +22,16 @@ class Fuzzy:
         self.velocidad['alta'] = fuzz.trapmf(self.velocidad.universe, v[2])
 
         regla1 = ctrl.Rule(self.temperatura['alta'] & self.humedad['baja'], self.velocidad['alta'])
+        regla11 = ctrl.Rule(self.temperatura['alta'] & self.humedad['media'], self.velocidad['alta'])
+        regla12 = ctrl.Rule(self.temperatura['alta'] & self.humedad['alta'], self.velocidad['media'])
         regla2 = ctrl.Rule(self.temperatura['baja'] & self.humedad['alta'], self.velocidad['baja'])
+        regla22 = ctrl.Rule(self.temperatura['baja'] & self.humedad['media'], self.velocidad['media'])
+        regla23 = ctrl.Rule(self.temperatura['baja'] & self.humedad['baja'], self.velocidad['media'])
         regla3 = ctrl.Rule(self.temperatura['media'] & self.humedad['media'], self.velocidad['media'])
+        regla32 = ctrl.Rule(self.temperatura['media'] & self.humedad['baja'], self.velocidad['alta'])
+        regla33 = ctrl.Rule(self.temperatura['media'] & self.humedad['alta'], self.velocidad['baja'])
 
-        sistema = ctrl.ControlSystem([regla1, regla2, regla3])
+        sistema = ctrl.ControlSystem([regla1,regla11,regla12, regla2,regla22,regla23, regla3,regla32,regla33])
         self.simulacion = ctrl.ControlSystemSimulation(sistema)
 
     def sim(self, tmp, h):
