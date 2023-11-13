@@ -57,6 +57,8 @@ class P3DX():
 
     num_sonar = 16
     sonar_max = 1.0
+    left_speed = 0
+    right_speed = 0
 
     def __init__(self, sim, robot_id, use_camera=False, use_lidar=False):
         self.sim = sim
@@ -83,7 +85,7 @@ class P3DX():
         img = np.frombuffer(img, dtype=np.uint8).reshape(resY, resX, 3)
         img = cv2.flip(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), 0)
         return img
-
+    
     def get_lidar(self):
         data = self.sim.getStringSignal('PioneerP3dxLidarData')
         if data is None:
@@ -95,17 +97,50 @@ class P3DX():
         self.sim.setJointTargetVelocity(self.left_motor, left_speed)
         self.sim.setJointTargetVelocity(self.right_motor, right_speed)
 
+    #obtener posicion de la esfera
+    def detectar_esfera_roja(self):
+        # Convertir la imagen de BGR a HSV
+        hsv = cv2.cvtColor(self.get_image(), cv2.COLOR_BGR2HSV)
 
-"""def main(args=None):
+        # Definir el rango de colores rojos en HSV
+        rango_bajo = np.array([0, 100, 100])
+        rango_alto = np.array([10, 255, 255])
+
+        # Crear una máscara utilizando el rango de colores rojos
+        mascara = cv2.inRange(hsv, rango_bajo, rango_alto)
+
+        # Encontrar contornos en la máscara
+        contornos, _ = cv2.findContours(mascara, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        # Filtrar contornos pequeños
+        contornos = [c for c in contornos if cv2.contourArea(c) > 100]
+
+        # Calcular el centro de masa de la esfera
+        if contornos:
+            mayor_contorno = max(contornos, key=cv2.contourArea)
+            momentos = cv2.moments(mayor_contorno)
+            centro_x = int(momentos['m10'] / momentos['m00'])
+            centro_y = int(momentos['m01'] / momentos['m00'])
+            return centro_x, centro_y
+        else:
+            #no hay imagen
+            return None
+
+
+def main(args=None):
     coppelia = Coppelia()
-    robot = P3DX(coppelia.sim, 'PioneerP3DX')
+    robot = P3DX(coppelia.sim, 'PioneerP3DX', use_camera=True)
     robot.set_speed(+1.2, -1.2)
     coppelia.start_simulation()
-    while (t := coppelia.sim.getSimulationTime()) < 3:
+    while (t := coppelia.sim.getSimulationTime()) < 15:
         print(f'Simulation time: {t:.3f} [s]')
+        res = robot.detectar_esfera_roja()
+        if res:
+            centro_x, centro_y = res
+            print("punto x: " + str(centro_x) + "\npunto y: " + str(centro_y))
+
     coppelia.stop_simulation()
 
 
 if __name__ == '__main__':
     main()
-"""

@@ -1,7 +1,7 @@
 #This script implements the evolutionary algorithm
 
 import deap
-import simulation
+import proy.simulation as simulation
 from fuzzy_controller import FuzzyController
 from population import Population
 
