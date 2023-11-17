@@ -172,7 +172,7 @@ class FuzzyController:
 
 """if __name__ == '__main__':
     var = [38,64,102,115,141,154,192,218]
-    f = FuzzyController(var,0.1)
+    f = FuzzyController(var)
     print(f.sim(90,185))
     print(f.get_etiqueta())
     f.plot()"""

@@ -1,5 +1,6 @@
 import random
 from deap import base, creator, tools
+import numpy as np
 
 # Definir el problema y tipos de aptitud
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
@@ -19,7 +20,8 @@ toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.2)
 toolbox.register("select", tools.selTournament, tournsize=3)
 
 # Crear una lista de 10 individuos (población inicial)
-poblacion = [toolbox.individuo() for _ in range(10)]
+poblacion_np = [np.random.uniform(-5.0, 5.0, size=(5,)) for _ in range(10)]
+poblacion = [creator.Individuo(ind) for ind in poblacion_np]
 
 # Mostrar los vectores y sus aptitudes en la población inicial
 print("Población inicial:")
