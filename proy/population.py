@@ -7,8 +7,9 @@ class Population:
     Stores the different solutons
     """
 
-    def __init__(self):
+    def __init__(self, rangos):
         self.population = []
+        self.rangos = rangos
 
         
     def __str__(self):
@@ -44,13 +45,22 @@ class Population:
     def best(self):
         self.ordenar(1)
         return self.population[0]
-
+    
+    
     #generate popultion
-    def genPopulation(self,population,psize):
-        limit = population[0]
-        for i in range(psize):
-            v = range(len(population))
-            v = [np.random.uniform(limit[0],limit[1]) for n in range(len(population))]
+    def genPopulation(self,psize):
+        for _ in range(psize):
+            v = [
+                np.random.uniform(self.rangos[0], self.rangos[1]),
+                np.random.uniform(self.rangos[2], self.rangos[3]),
+                np.random.uniform(self.rangos[4], self.rangos[5]),
+                np.random.uniform(self.rangos[6], self.rangos[7]),
+                np.random.uniform(self.rangos[8], self.rangos[9]),
+                np.random.uniform(self.rangos[10], self.rangos[11]),
+                np.random.uniform(self.rangos[12], self.rangos[13]),
+                np.random.uniform(self.rangos[14], self.rangos[15]),
+            ]
             g = Genome(v,0)
             self.population.append(g)
+        self.population = sorted(self.population) #que sean rangos normales
         return self.population

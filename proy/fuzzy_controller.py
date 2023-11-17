@@ -12,7 +12,7 @@ class FuzzyController:
     Tenemos 5 etiquetas, lo que implica 8 valores
     """
  
-    def __init__(self, fun, paso):
+    def __init__(self, fun):
         self.data = fun
         self.paso = 0.1
         
