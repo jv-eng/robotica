@@ -24,3 +24,12 @@ if __name__ == '__main__':
     for i in range(2):
         print(f"{i}")
         main()
+
+"""if __name__ == '__main__':
+    algorithm = EvolutionaryAlgorithm()
+    read = input("Start simulation? (y/n): ")
+    print(read)
+    if read == 'y' or not read:
+        algorithm.run()
+    else:
+        print("no simulation is started")"""

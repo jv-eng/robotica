@@ -12,8 +12,6 @@ def evaluar_individuo(individuo):
 
 # Registrar operadores genéticos
 toolbox = base.Toolbox()
-toolbox.register("attr_float", random.uniform, -5.0, 5.0)
-toolbox.register("individuo", tools.initRepeat, creator.Individuo, toolbox.attr_float, n=5)
 toolbox.register("evaluate", evaluar_individuo)
 toolbox.register("mate", tools.cxTwoPoint)
 toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.2)
