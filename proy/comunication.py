@@ -57,8 +57,8 @@ class P3DX():
 
     num_sonar = 16
     sonar_max = 1.0
-    left_speed = 0
-    right_speed = 0
+    left_speed_ = 0
+    right_speed_ = 0
 
     def __init__(self, sim, robot_id, use_camera=False, use_lidar=False):
         self.sim = sim
@@ -94,8 +94,10 @@ class P3DX():
             return self.sim.unpackFloatTable(data)
 
     def set_speed(self, left_speed, right_speed):
-        self.sim.setJointTargetVelocity(self.left_motor, left_speed)
-        self.sim.setJointTargetVelocity(self.right_motor, right_speed)
+        self.left_speed_ += left_speed
+        self.right_speed_ += right_speed
+        self.sim.setJointTargetVelocity(self.left_motor, self.left_speed_)
+        self.sim.setJointTargetVelocity(self.right_motor, self.right_speed_)
 
     #obtener posicion de la esfera
     def detectar_esfera_roja(self):
@@ -125,12 +127,24 @@ class P3DX():
         else:
             #no hay imagen
             return None
+        
+    #detectar si el robot ha colisionado con el objetivo
+    def detectar_colision(self):
+    # Obtener los handles de los objetos en CoppeliaSim
+        esfera_handle = self.sim.getObjectHandle('/Sphere')
+        objeto_handle = self.sim.getObjectHandle('/PioneerP3DX')
 
+        # Verificar colisiones entre la esfera y el objeto móvil
+        result, _, _ = self.sim.checkDistance(objeto_handle, esfera_handle, 0.1)
 
-def main(args=None):
+        if result == 1:
+            print("¡El robot está a 0 de distancia de la esfera! ¡Deteniendo el robot!")
+        return result == 1
+
+"""def main(args=None):
     coppelia = Coppelia()
     robot = P3DX(coppelia.sim, 'PioneerP3DX', use_camera=True)
-    robot.set_speed(+1.2, -1.2)
+    robot.set_speed(+1.2, +1.2)
     coppelia.start_simulation()
     while (t := coppelia.sim.getSimulationTime()) < 15:
         print(f'Simulation time: {t:.3f} [s]')
@@ -138,9 +152,12 @@ def main(args=None):
         if res:
             centro_x, centro_y = res
             print("punto x: " + str(centro_x) + "\npunto y: " + str(centro_y))
+            if robot.detectar_colision(): 
+                print(f"chocado en t = {t}")
+                break
 
     coppelia.stop_simulation()
 
 
 if __name__ == '__main__':
-    main()
+    main()"""

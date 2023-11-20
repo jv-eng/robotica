@@ -43,7 +43,7 @@ class Population:
 
     #get best solution
     def best(self):
-        self.ordenar(1)
+        self.order(1)
         return self.population[0]
     
     
@@ -62,5 +62,5 @@ class Population:
             ]
             g = Genome(v,0)
             self.population.append(g)
-        self.population = sorted(self.population) #que sean rangos normales
+        #self.population = sorted(self.population) #que sean rangos normales
         return self.population

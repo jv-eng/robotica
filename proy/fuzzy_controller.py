@@ -106,19 +106,19 @@ class FuzzyController:
         #sacar etiqueta
         if res <= self.data[1]:
             self.etiqueta = 'muy izq'
-            return [+0.1, -0.2]
+            return [-0.1, +0.2]
         elif res <= self.data[3]:
             self.etiqueta = 'izq'
-            return [0, -0.1]
+            return [0, +0.1]
         elif res <= self.data[5]:
             self.etiqueta = 'centrado'
             return None
         elif res <= self.data[7]:
             self.etiqueta = 'dcha'
-            return [-0.1, 0]
+            return [+0.1, 0]
         else:
             self.etiqueta = 'muy dcha'
-            return [-0.2, +0.1]
+            return [+0.2, -0.1]
 
     #ver que etiqueta es
     def get_etiqueta(self):

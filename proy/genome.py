@@ -16,7 +16,7 @@ class Genome:
         return self.err_pasado
 
     def getFitness(self):
-        return self.valor
+        return self.fitness
 
     def getVector(self):
         return self.vector

@@ -37,19 +37,19 @@ class EvolutionaryAlgorithm:
         # Ejecución de 10 generaciones
         for gen in range(n_ej):
             # Aplicar operadores genéticos para crear la siguiente generación
-            offspring = toolbox.select(initial_population, len(initial_population))
+            offspring = toolbox.select(initial_population.getPopulation(), len(initial_population.getPopulation()))
             offspring = [toolbox.clone(ind) for ind in offspring]
 
             for ind1, ind2 in zip(offspring[::2], offspring[1::2]):
                 if random.random() < 0.5:
-                    toolbox.mate(ind1, ind2)
-                    del ind1.fitness.values
-                    del ind2.fitness.values
+                    toolbox.mate(ind1.getVector(), ind2.getVector())
+                    ind1.setFitness(0)
+                    ind2.setFitness(0)
 
             for ind in offspring:
                 if random.random() < 0.2:
-                    toolbox.mutate(ind)
-                    del ind.fitness.values
+                    toolbox.mutate(ind.getVector())
+                    ind.setFitness(0)
 
             # Evaluar la nueva población
             aptitudes = [toolbox.evaluate(ind) for ind in offspring]
@@ -60,11 +60,13 @@ class EvolutionaryAlgorithm:
                 print(f"Individuo {idx + 1}: {individuo} - Aptitud: {aptitud}")"""
 
             # Seleccionar los mejores individuos de la descendencia para el reemplazo
-            n_mejores = self.n_population / 2  # Número de mejores individuos a seleccionar
+            n_mejores = self.n_population // 2  # Número de mejores individuos a seleccionar
             mejores_descendencia = tools.selBest(offspring, n_mejores)
 
             # Reemplazar la población actual con los mejores individuos de la descendencia
-            initial_population[:] = mejores_descendencia + offspring[n_mejores:]
+            initial_population.setPopulation(mejores_descendencia + offspring[n_mejores:])
+
+        print(initial_population.best())
 
 
     """Calcular el fitness del individuo"""
@@ -79,19 +81,23 @@ class EvolutionaryAlgorithm:
         #gestionamos la simulación
         while (t := self.coppelia.sim.getSimulationTime()) < 15:
             #comprobar si hemos llegado a la esfera
-            """"""
+            if self.robot.detectar_colision(): break
             #obtenemos posición de la esfera
             res = self.robot.detectar_esfera_roja()
             #calcular error actual
-            ind.setErrorPasado(ind.getErrorActual())
-            ind.setErrorActual(res[0] - ind.getErrorActual())
+            if res:
+                ind.setErrorPasado(ind.getErrorActual())
+                ind.setErrorActual(res[0] - ind.getErrorActual())
+            else:
+                ind.setErrorPasado(ind.getErrorActual())
+                ind.setErrorActual(255 - ind.getErrorActual())
             #pasar el resultado al modelo borroso
             res_fuzzy = fuzzy.sim(ind.getErrorActual(), ind.getErrorPasado())
             if fuzzy.get_etiqueta() == 'correccion muy izq' or fuzzy.get_etiqueta() == 'correccion muy dcha':
                 cont += 1
             #revisar resultado
             if res_fuzzy:
-                self.coppelia.set_speed(res_fuzzy[0], res_fuzzy[1])
+                self.robot.set_speed(res_fuzzy[0], res_fuzzy[1])
 
         #terminamos la simulación
         self.coppelia.stop_simulation()
