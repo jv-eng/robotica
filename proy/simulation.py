@@ -10,12 +10,12 @@ def main():
     #configure the simulation, robot and simulation 
     coppelia = comunication.Coppelia()
     robot = comunication.P3DX(coppelia.sim, 'PioneerP3DX', True)    
-    robot.set_speed(-1.0, -1.0)
+    robot.set_speed(1.0, 1.0)
 
     #rangos
     rangos_funciones = []
     for _ in range(8):
-        rango = [random.randint(0, 255), random.randint(0, 255)]
+        rango = [random.randint(15, 240), random.randint(15, 240)]
         rango.sort()  # Ordenar los valores del rango
         rangos_funciones.append(rango[0])
         rangos_funciones.append(rango[1])
@@ -23,9 +23,11 @@ def main():
     print(rangos_funciones)
 
     #parámetros de la simulación
-    read = input("Start simulation? (y/n): ")
     num_ind = input("Number of individuals: ")
     num_ej = input("Number of executions: ")
+    #num_ind = 4
+    #num_ej = 8
+    read = input(f"Start simulation with {num_ind} individuals and {num_ej} generations? (y/n): ")
 
     #iniciar o no simulación
     if read == 'y' or not read:

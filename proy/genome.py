@@ -21,6 +21,9 @@ class Genome:
     def getVector(self):
         return self.vector
     
+    def getFuzzy(self):
+        return self.fuzzy
+    
     def setErrorActual(self, new_value):
         self.err_actual = new_value
 
@@ -32,3 +35,6 @@ class Genome:
 
     def setVector(self,new_vector):
         self.vector = new_vector
+
+    def setFuzzy(self, fuzzy):
+        self.fuzzy = fuzzy

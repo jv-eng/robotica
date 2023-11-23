@@ -102,29 +102,29 @@ class FuzzyController:
         self.simulation.input['err_pasado'] = error_pasado
         self.simulation.compute()
         res = self.simulation.output['resultado']
+        #print("\nborroso\n" + "err_actual: " + str(error_actual) + "\nerr_pasado: " + str(error_pasado) + "\nres: " + str(res))
 
         #sacar etiqueta
+        #print(res <= self.data[1])
         if res <= self.data[1]:
-            self.etiqueta = 'muy izq'
-            return [-0.1, +0.2]
+            self.etiqueta = 'correccion muy izq'
+            return [-0.5, +1.0]
         elif res <= self.data[3]:
-            self.etiqueta = 'izq'
-            return [0, +0.1]
+            self.etiqueta = 'correccion izq'
+            return [0.0, +0.5]
         elif res <= self.data[5]:
-            self.etiqueta = 'centrado'
+            self.etiqueta = 'correccion centrado'
             return None
         elif res <= self.data[7]:
-            self.etiqueta = 'dcha'
-            return [+0.1, 0]
+            self.etiqueta = 'correccion dcha'
+            return [+0.5, 0.0]
         else:
-            self.etiqueta = 'muy dcha'
-            return [+0.2, -0.1]
+            self.etiqueta = 'correccion muy dcha'
+            return [+1.0, -0.5]
 
     #ver que etiqueta es
     def get_etiqueta(self):
-        tmp = self.etiqueta
-        self.etiqueta = None
-        return tmp
+        return self.etiqueta
 
 
     def plot(self):

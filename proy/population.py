@@ -46,6 +46,10 @@ class Population:
         self.order(1)
         return self.population[0]
     
+    def check_data(self):
+        for ind in self.population:
+            ind.setVector(sorted(ind.getVector()))
+    
     
     #generate popultion
     def genPopulation(self,psize):

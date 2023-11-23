@@ -7,27 +7,27 @@ class TestFuzzyMethods(unittest.TestCase):
     def test_1(self):
         f = FuzzyController(self.var)
         f.sim(210, 200)
-        self.assertEqual(f.get_etiqueta(), 'muy izq')
+        self.assertEqual(f.get_etiqueta(), 'correccion muy izq')
 
     def test_2(self):
         f = FuzzyController(self.var)
         f.sim(150, 100)
-        self.assertEqual(f.get_etiqueta(), 'izq')
+        self.assertEqual(f.get_etiqueta(), 'correccion izq')
 
     def test_3(self):
         f = FuzzyController(self.var)
         f.sim(125,120)
-        self.assertEqual(f.get_etiqueta(), 'centrado')
+        self.assertEqual(f.get_etiqueta(), 'correccion centrado')
     
     def test_4(self):
-        f = FuzzyController(self.varo)
+        f = FuzzyController(self.var)
         f.sim(65, 50)
-        self.assertEqual(f.get_etiqueta(), 'dcha')
+        self.assertEqual(f.get_etiqueta(), 'correccion dcha')
 
     def test_5(self):
         f = FuzzyController(self.var)
         f.sim(20, 10)
-        self.assertEqual(f.get_etiqueta(), 'muy dcha')
+        self.assertEqual(f.get_etiqueta(), 'correccion muy dcha')
 
 if __name__ == '__main__':
     unittest.main()

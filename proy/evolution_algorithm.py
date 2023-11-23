@@ -4,6 +4,7 @@ import random
 from fuzzy_controller import FuzzyController
 from population import Population
 from deap import base, creator, tools
+import numpy as np
 
 
 class EvolutionaryAlgorithm:
@@ -19,12 +20,9 @@ class EvolutionaryAlgorithm:
         #generar poblacion
         initial_population = Population(self.vect_ranges)
         initial_population.genPopulation(self.n_population)
-        #Mostrar primera población
-        print("Población inicial:")
-        print(initial_population)
 
         # Definir el problema y tipos de aptitud
-        creator.create("FitnessMax", base.Fitness, weights=(1.0,))
+        creator.create("FitnessMax", base.Fitness, weights=(-1.0,))
         creator.create("Individuo", list, fitness=creator.FitnessMax)
 
         # Registrar operadores genéticos
@@ -34,8 +32,20 @@ class EvolutionaryAlgorithm:
         toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.2)
         toolbox.register("select", tools.selTournament, tournsize=3)
 
+        #evaluar población inicial
+        print("\nEvaluando población inicial")
+        fitnesses = map(toolbox.evaluate, initial_population.getPopulation())
+        for ind, fit in zip(initial_population.getPopulation(), fitnesses):
+            ind.setFitness(fit[0])
+        
+        """print("Población inicial:")
+        print(initial_population)
+        input()"""
+        print("\nInicio del algoritmo")
         # Ejecución de 10 generaciones
         for gen in range(n_ej):
+            print(f"\nEjecución número {gen}")
+            initial_population.check_data()
             # Aplicar operadores genéticos para crear la siguiente generación
             offspring = toolbox.select(initial_population.getPopulation(), len(initial_population.getPopulation()))
             offspring = [toolbox.clone(ind) for ind in offspring]
@@ -52,58 +62,78 @@ class EvolutionaryAlgorithm:
                     ind.setFitness(0)
 
             # Evaluar la nueva población
-            aptitudes = [toolbox.evaluate(ind) for ind in offspring]
+            fitnesses = map(toolbox.evaluate, offspring)
+            for ind, fit in zip(offspring, fitnesses):
+                ind.setFitness(fit[0])
 
-            # Mostrar los vectores y sus aptitudes en la nueva población
-            """print(f"\nGeneración {gen + 1}:")
-            for idx, (individuo, aptitud) in enumerate(zip(offspring, aptitudes)):
-                print(f"Individuo {idx + 1}: {individuo} - Aptitud: {aptitud}")"""
+            #seleccionar mejores individuos
+            poblacion_combinada = offspring + initial_population.getPopulation()
 
-            # Seleccionar los mejores individuos de la descendencia para el reemplazo
-            n_mejores = self.n_population // 2  # Número de mejores individuos a seleccionar
-            mejores_descendencia = tools.selBest(offspring, n_mejores)
+            mejores_descendencia = tools.selBest(poblacion_combinada, self.n_population)
 
             # Reemplazar la población actual con los mejores individuos de la descendencia
-            initial_population.setPopulation(mejores_descendencia + offspring[n_mejores:])
+            initial_population.setPopulation(mejores_descendencia)
 
+        """print(initial_population)
+        print("\n")"""
         print(initial_population.best())
+        initial_population.best().getFuzzy().plot()
 
 
     """Calcular el fitness del individuo"""
     def fitness(self, ind):
-        #creamos el modelo de lógica borrosa
+        #creamos el modelo de lógica borrosa e inciamos parámetros
         fuzzy = FuzzyController(ind.getVector())
+        ind.setFuzzy(fuzzy)
+        cont = 0
+        num_tiempo = 20
+        paso = 0.05
 
         #arrancamos la simulación
         self.coppelia.start_simulation()
 
-        cont_err = 0 #contador para penalizar que se desvíe mucho
         #gestionamos la simulación
-        while (t := self.coppelia.sim.getSimulationTime()) < 15:
-            #comprobar si hemos llegado a la esfera
-            if self.robot.detectar_colision(): break
-            #obtenemos posición de la esfera
-            res = self.robot.detectar_esfera_roja()
-            #calcular error actual
-            if res:
-                ind.setErrorPasado(ind.getErrorActual())
-                ind.setErrorActual(res[0] - ind.getErrorActual())
-            else:
-                ind.setErrorPasado(ind.getErrorActual())
-                ind.setErrorActual(255 - ind.getErrorActual())
-            #pasar el resultado al modelo borroso
-            res_fuzzy = fuzzy.sim(ind.getErrorActual(), ind.getErrorPasado())
-            if fuzzy.get_etiqueta() == 'correccion muy izq' or fuzzy.get_etiqueta() == 'correccion muy dcha':
-                cont += 1
-            #revisar resultado
-            if res_fuzzy:
-                self.robot.set_speed(res_fuzzy[0], res_fuzzy[1])
+        l = np.arange(0,num_tiempo,paso)
+        while (t := self.coppelia.sim.getSimulationTime()) < num_tiempo:
+            tmp = round(t, 2)
+            if tmp in l:
+                #comprobar si hemos llegado a la esfera
+                if self.robot.detectar_colision(): break
+                #obtenemos posición de la esfera
+                res = self.robot.detectar_esfera_roja()
+                #print(res)
+
+                #calcular error actual
+                if res:
+                    ind.setErrorPasado(ind.getErrorActual())
+                    ind.setErrorActual(res[0])
+                else:
+                    ind.setErrorActual(255)
+                    
+                #pasar el resultado al modelo borroso
+                res_fuzzy = fuzzy.sim(ind.getErrorActual(), ind.getErrorPasado())
+
+                """if res_fuzzy: 
+                    print(f"tiempo {t} \n motor {res_fuzzy[0]} {res_fuzzy[1]}\n esfera {res}")
+                print(ind.getErrorActual())
+                print("\n")"""
+
+                if fuzzy.get_etiqueta() == 'correccion muy izq' or fuzzy.get_etiqueta() == 'correccion muy dcha':
+                    #print("contador: " + str(cont))
+                    cont += 1
+                #revisar resultado
+                if res_fuzzy:
+                    self.robot.set_speed(res_fuzzy[0], res_fuzzy[1])
+                else:
+                    self.robot.set_speed(-0.5,+0.5)
 
         #terminamos la simulación
         self.coppelia.stop_simulation()
 
         #calculamos el fitness
-        if cont_err > 0:
-            ind.setFitness(t * (1 + 1 / cont_err))
+        res = 0
+        if cont > 0:
+            res = t * (1 + 1 / cont)
         else:
-            ind.setFitness(t)
+            res = t
+        return res,

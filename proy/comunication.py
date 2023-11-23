@@ -47,7 +47,7 @@ class Coppelia():
             time.sleep(0.1)
         # print('*** restoring environment')
         self.sim.setInt32Param(self.sim.intparam_idle_fps, self.default_idle_fps)
-        print('*** done')
+        print('*** done. Fin de la simulación.')
 
     def is_running(self):
         return self.sim.getSimulationState() != self.sim.simulation_stopped
@@ -96,8 +96,10 @@ class P3DX():
     def set_speed(self, left_speed, right_speed):
         self.left_speed_ += left_speed
         self.right_speed_ += right_speed
-        self.sim.setJointTargetVelocity(self.left_motor, self.left_speed_)
-        self.sim.setJointTargetVelocity(self.right_motor, self.right_speed_)
+        if self.left_speed_ <= 2 and self.left_speed_ >= 0:
+            self.sim.setJointTargetVelocity(self.left_motor, self.left_speed_)
+        if  self.right_speed_ <= 2 and  self.right_speed_ >= 0:
+            self.sim.setJointTargetVelocity(self.right_motor, self.right_speed_)
 
     #obtener posicion de la esfera
     def detectar_esfera_roja(self):
@@ -138,7 +140,7 @@ class P3DX():
         result, _, _ = self.sim.checkDistance(objeto_handle, esfera_handle, 0.1)
 
         if result == 1:
-            print("¡El robot está a 0 de distancia de la esfera! ¡Deteniendo el robot!")
+            print("El robot ha llegado a su destino, detiendo simulación.")
         return result == 1
 
 """def main(args=None):
