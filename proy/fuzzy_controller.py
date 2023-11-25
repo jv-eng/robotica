@@ -105,22 +105,21 @@ class FuzzyController:
         #print("\nborroso\n" + "err_actual: " + str(error_actual) + "\nerr_pasado: " + str(error_pasado) + "\nres: " + str(res))
 
         #sacar etiqueta
-        #print(res <= self.data[1])
         if res <= self.data[1]:
             self.etiqueta = 'correccion muy izq'
-            return [-0.5, +1.0]
+            return [+0.35, -0.2]
         elif res <= self.data[3]:
             self.etiqueta = 'correccion izq'
-            return [0.0, +0.5]
+            return [+0.15, 0.0]
         elif res <= self.data[5]:
             self.etiqueta = 'correccion centrado'
             return None
         elif res <= self.data[7]:
             self.etiqueta = 'correccion dcha'
-            return [+0.5, 0.0]
+            return [0.0, +0.15]
         else:
             self.etiqueta = 'correccion muy dcha'
-            return [+1.0, -0.5]
+            return [-0.2, +0.35]
 
     #ver que etiqueta es
     def get_etiqueta(self):
@@ -169,10 +168,3 @@ class FuzzyController:
         #mostrar gráfica
         plt.tight_layout()
         plt.show()
-
-"""if __name__ == '__main__':
-    var = [38,64,102,115,141,154,192,218]
-    f = FuzzyController(var)
-    print(f.sim(90,185))
-    print(f.get_etiqueta())
-    f.plot()"""

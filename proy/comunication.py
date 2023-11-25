@@ -94,12 +94,11 @@ class P3DX():
             return self.sim.unpackFloatTable(data)
 
     def set_speed(self, left_speed, right_speed):
-        self.left_speed_ += left_speed
-        self.right_speed_ += right_speed
-        if self.left_speed_ <= 2 and self.left_speed_ >= 0:
-            self.sim.setJointTargetVelocity(self.left_motor, self.left_speed_)
-        if  self.right_speed_ <= 2 and  self.right_speed_ >= 0:
-            self.sim.setJointTargetVelocity(self.right_motor, self.right_speed_)
+        self.left_speed_ = max(0, min(self.left_speed_ + left_speed, 2))
+        self.sim.setJointTargetVelocity(self.left_motor, self.left_speed_)
+
+        self.right_speed_ = max(0, min(self.right_speed_ + right_speed, 2))
+        self.sim.setJointTargetVelocity(self.right_motor, self.right_speed_)
 
     #obtener posicion de la esfera
     def detectar_esfera_roja(self):
@@ -129,37 +128,46 @@ class P3DX():
         else:
             #no hay imagen
             return None
-        
-    #detectar si el robot ha colisionado con el objetivo
-    def detectar_colision(self):
-    # Obtener los handles de los objetos en CoppeliaSim
-        esfera_handle = self.sim.getObjectHandle('/Sphere')
-        objeto_handle = self.sim.getObjectHandle('/PioneerP3DX')
+    
+    # Función para detectar cuando la esfera ocupa un porcentaje de la imagen
+    def detectar_colision_porcentaje_umbral(self):
+        # Obtener la imagen desde la cámara
+        img = self.get_image()
 
-        # Verificar colisiones entre la esfera y el objeto móvil
-        result, _, _ = self.sim.checkDistance(objeto_handle, esfera_handle, 0.1)
+        # Convertir la imagen de BGR a HSV
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-        if result == 1:
-            print("El robot ha llegado a su destino, detiendo simulación.")
-        return result == 1
+        # Definir el rango de colores rojos en HSV
+        rango_bajo = np.array([0, 100, 100])
+        rango_alto = np.array([10, 255, 255])
 
-"""def main(args=None):
-    coppelia = Coppelia()
-    robot = P3DX(coppelia.sim, 'PioneerP3DX', use_camera=True)
-    robot.set_speed(+1.2, +1.2)
-    coppelia.start_simulation()
-    while (t := coppelia.sim.getSimulationTime()) < 15:
-        print(f'Simulation time: {t:.3f} [s]')
-        res = robot.detectar_esfera_roja()
-        if res:
-            centro_x, centro_y = res
-            print("punto x: " + str(centro_x) + "\npunto y: " + str(centro_y))
-            if robot.detectar_colision(): 
-                print(f"chocado en t = {t}")
-                break
+        # Crear una máscara utilizando el rango de colores rojos
+        mascara = cv2.inRange(hsv, rango_bajo, rango_alto)
 
-    coppelia.stop_simulation()
+        # Encontrar contornos en la máscara
+        contornos, _ = cv2.findContours(mascara, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+        # Filtrar contornos pequeños
+        contornos = [c for c in contornos if cv2.contourArea(c) > 100]
 
-if __name__ == '__main__':
-    main()"""
+        # Área total de la imagen
+        area_total = img.shape[0] * img.shape[1]
+
+        # Calcular el área de la esfera
+        area_esfera = 0
+        if contornos:
+            mayor_contorno = max(contornos, key=cv2.contourArea)
+            area_esfera = cv2.contourArea(mayor_contorno)
+
+        # Calcular el porcentaje de área ocupada por la esfera
+        porcentaje_area_esfera = (area_esfera / area_total) * 100
+
+        # Definir el umbral de porcentaje para detectar colisión (por ejemplo, 10%)
+        umbral_porcentaje = 80
+
+        # Verificar si la esfera ocupa un porcentaje mayor que el umbral
+        """if porcentaje_area_esfera > umbral_porcentaje:
+            print("La esfera ocupa un porcentaje significativo de la imagen. Posible colisión.")
+            return True
+        return False"""
+        return porcentaje_area_esfera > umbral_porcentaje

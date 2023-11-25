@@ -38,9 +38,6 @@ class EvolutionaryAlgorithm:
         for ind, fit in zip(initial_population.getPopulation(), fitnesses):
             ind.setFitness(fit[0])
         
-        """print("Población inicial:")
-        print(initial_population)
-        input()"""
         print("\nInicio del algoritmo")
         # Ejecución de 10 generaciones
         for gen in range(n_ej):
@@ -74,8 +71,6 @@ class EvolutionaryAlgorithm:
             # Reemplazar la población actual con los mejores individuos de la descendencia
             initial_population.setPopulation(mejores_descendencia)
 
-        """print(initial_population)
-        print("\n")"""
         print(initial_population.best())
         initial_population.best().getFuzzy().plot()
 
@@ -97,11 +92,10 @@ class EvolutionaryAlgorithm:
         while (t := self.coppelia.sim.getSimulationTime()) < num_tiempo:
             tmp = round(t, 2)
             if tmp in l:
-                #comprobar si hemos llegado a la esfera
-                if self.robot.detectar_colision(): break
+                #ver si hemos llegado a la esfera
+                if self.robot.detectar_colision_porcentaje_umbral(): break
                 #obtenemos posición de la esfera
                 res = self.robot.detectar_esfera_roja()
-                #print(res)
 
                 #calcular error actual
                 if res:
@@ -113,13 +107,8 @@ class EvolutionaryAlgorithm:
                 #pasar el resultado al modelo borroso
                 res_fuzzy = fuzzy.sim(ind.getErrorActual(), ind.getErrorPasado())
 
-                """if res_fuzzy: 
-                    print(f"tiempo {t} \n motor {res_fuzzy[0]} {res_fuzzy[1]}\n esfera {res}")
-                print(ind.getErrorActual())
-                print("\n")"""
-
+                #penalizar
                 if fuzzy.get_etiqueta() == 'correccion muy izq' or fuzzy.get_etiqueta() == 'correccion muy dcha':
-                    #print("contador: " + str(cont))
                     cont += 1
                 #revisar resultado
                 if res_fuzzy:

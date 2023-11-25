@@ -66,5 +66,4 @@ class Population:
             ]
             g = Genome(v,0)
             self.population.append(g)
-        #self.population = sorted(self.population) #que sean rangos normales
         return self.population

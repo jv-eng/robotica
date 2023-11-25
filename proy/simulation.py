@@ -25,8 +25,6 @@ def main():
     #parámetros de la simulación
     num_ind = input("Number of individuals: ")
     num_ej = input("Number of executions: ")
-    #num_ind = 4
-    #num_ej = 8
     read = input(f"Start simulation with {num_ind} individuals and {num_ej} generations? (y/n): ")
 
     #iniciar o no simulación
@@ -36,21 +34,5 @@ def main():
     else:
         print("no simulation is started")
 
-
-    """#start the simulation (max 20 seconds)
-    coppelia.start_simulation()
-    while (t := coppelia.sim.getSimulationTime()) < 20:
-        print(f'Simulation time: {t:.3f} [s]')
-    coppelia.stop_simulation()"""
-
 if __name__ == '__main__':
     main()
-
-"""if __name__ == '__main__':
-    algorithm = EvolutionaryAlgorithm()
-    read = input("Start simulation? (y/n): ")
-    print(read)
-    if read == 'y' or not read:
-        algorithm.run()
-    else:
-        print("no simulation is started")"""
