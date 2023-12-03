@@ -7,9 +7,11 @@ class Population:
     Stores the different solutons
     """
 
-    def __init__(self, rangos):
+    def __init__(self, rangos, semilla):
         self.population = []
         self.rangos = rangos
+        #configurar semilla
+        np.random.seed(semilla)
 
         
     def __str__(self):

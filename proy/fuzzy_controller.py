@@ -12,9 +12,12 @@ class FuzzyController:
     Tenemos 5 etiquetas, lo que implica 8 valores
     """
  
-    def __init__(self, fun):
-        self.data = fun
+    def __init__(self, fun, semilla):
+        self.data = sorted(fun)
         self.paso = 0.1
+
+        #configurar semilla
+        np.random.seed(semilla)
         
         #configurar modelo
         self.__crear_trapecios()

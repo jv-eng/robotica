@@ -163,7 +163,7 @@ class P3DX():
         porcentaje_area_esfera = (area_esfera / area_total) * 100
 
         # Definir el umbral de porcentaje para detectar colisión (por ejemplo, 10%)
-        umbral_porcentaje = 80
+        umbral_porcentaje = 90
 
         # Verificar si la esfera ocupa un porcentaje mayor que el umbral
         """if porcentaje_area_esfera > umbral_porcentaje:

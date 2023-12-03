@@ -9,16 +9,19 @@ import numpy as np
 
 class EvolutionaryAlgorithm:
 
-    def __init__(self, n_population, vect_ranges, sim, robot):
+    def __init__(self, n_population, vect_ranges, sim, robot, semilla):
         self.n_population = n_population
         self.vect_ranges = vect_ranges
         self.coppelia = sim
         self.robot = robot
+        #configurar semilla
+        self.semilla = semilla
+        np.random.seed(semilla)
 
     """Ejecutar algoritmo"""
     def run(self, n_ej):
         #generar poblacion
-        initial_population = Population(self.vect_ranges)
+        initial_population = Population(self.vect_ranges, self.semilla)
         initial_population.genPopulation(self.n_population)
 
         # Definir el problema y tipos de aptitud
@@ -28,9 +31,13 @@ class EvolutionaryAlgorithm:
         # Registrar operadores genéticos
         toolbox = base.Toolbox()
         toolbox.register("evaluate", self.fitness)
-        toolbox.register("mate", tools.cxTwoPoint)
-        toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.2)
         toolbox.register("select", tools.selTournament, tournsize=3)
+        toolbox.register("mate", tools.cxTwoPoint)
+        toolbox.register("mutate", tools.mutUniformInt, low=0, up=10, indpb=0.2)
+        toolbox.register("reemplazo", tools.selBest)
+
+
+
 
         #evaluar población inicial
         print("\nEvaluando población inicial")
@@ -66,19 +73,20 @@ class EvolutionaryAlgorithm:
             #seleccionar mejores individuos
             poblacion_combinada = offspring + initial_population.getPopulation()
 
-            mejores_descendencia = tools.selBest(poblacion_combinada, self.n_population)
+            mejores_descendencia = toolbox.reemplazo(poblacion_combinada, self.n_population)
 
             # Reemplazar la población actual con los mejores individuos de la descendencia
-            initial_population.setPopulation(mejores_descendencia)
+            initial_population.setPopulation(offspring)
 
-        print(initial_population.best())
-        initial_population.best().getFuzzy().plot()
+        #print(initial_population.best())
+        #initial_population.best().getFuzzy().plot()
+        return initial_population.best()
 
 
     """Calcular el fitness del individuo"""
     def fitness(self, ind):
         #creamos el modelo de lógica borrosa e inciamos parámetros
-        fuzzy = FuzzyController(ind.getVector())
+        fuzzy = FuzzyController(ind.getVector(), self.semilla)
         ind.setFuzzy(fuzzy)
         cont = 0
         num_tiempo = 20
