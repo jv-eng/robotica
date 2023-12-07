@@ -17,7 +17,7 @@ import numpy as np
 def execution(ea,semilla, ind, gen):
     #configure the simulation, robot and simulation 
     coppelia = comunication.Coppelia()
-    robot = comunication.P3DX(coppelia.sim, 'PioneerP3DX', True)    
+    robot = comunication.P3DX(coppelia.sim, 'PioneerP3DX', True)  
     robot.set_speed(1.0, 1.0)
 
     #rangos
@@ -33,8 +33,7 @@ def execution(ea,semilla, ind, gen):
 
     algorithm = ea(int(ind), rangos_funciones, coppelia, robot, semilla)
     res = algorithm.run(int(gen))
-    coppelia = None
-    robot = None
+
     return res
 
     #parámetros de la simulación
@@ -50,39 +49,56 @@ def execution(ea,semilla, ind, gen):
         print("no simulation is started")"""
 
 def main():
-    list_ea = [ea1, ea2, ea3, ea4, ea5, ea6, ea7, ea8]
+    """list_ea = [ea1, ea2, ea3, ea4, ea5, ea6, ea7, ea8]
     list_op = [
         "Torneo, 1 punto, uniforme, generacional", "Torneo, 1 punto, gaussiana, generacional", "Torneo, 2 puntos, uniforme, generacional",
         "Torneo, 2 puntos, gaussiana, generacional", "Torneo, 1 punto, uniforme, elitista", "Torneo, 1 punto, gaussiana, elitista",
         "Torneo, 2 puntos, uniforme, elitista", "Torneo, 2 puntos, uniforme, elitista"
+        ]"""
+    list_ea = [ea1, ea2, ea3]
+    list_op = [
+        "Torneo, 1 punto, uniforme, generacional", "Torneo, 1 punto, gaussiana, generacional", "Torneo, 2 puntos, uniforme, generacional"
         ]
-    list_semillas = [0, 45, 90]
-    list_gen = [10, 15]
+    """list_ea = [ea4, ea5, ea6]
+    list_op = [
+        "Torneo, 2 puntos, gaussiana, generacional", "Torneo, 1 punto, uniforme, elitista", "Torneo, 1 punto, gaussiana, elitista"
+        ]"""
+    """list_ea = [ea7, ea8]
+    list_op = [
+        "Torneo, 2 puntos, uniforme, elitista", "Torneo, 2 puntos, uniforme, elitista"
+        ]"""
+    
+    """list_semillas = [0, 45, 90]
+    list_gen = [10, 12]
     list_ind = [5, 8]
-    best = (execution(ea1, 0, 2, 1), list_op[1], f"semilla: {0}\tnº ind: {2}\t nº gen: {1}\top: {list_op[0]}")
+    best = (execution(ea1, 0, 2, 1), list_op[1], f"semilla: {0}\tnº ind: {2}\t nº gen: {1}\top: {list_op[0]}")"""
+    list_semillas = [45]
+    list_gen = [10]
+    list_ind = [5]
     #ejecucion
-    for semilla in list_semillas:
-        for ind in list_ind:
-            for gen in list_gen:
-                for ea, op in zip(list_ea, list_op):
-                    print("\n\nNUEVA EJECUCIÓN")
-                    #configurar semilla
-                    np.random.seed(semilla)
-                    #ejecucion
-                    best_ind = execution(ea, semilla, ind, gen)
-                    #mostrar datos
-                    tmp = f"semilla: {semilla}\tnº ind: {ind}\t nº gen: {gen}\top: {op}"
-                    print(tmp)
-                    print(best_ind.getVector())
-                    print(best_ind.getFitness())
-                    print("\n")
-                    #guardar el mejor
-                    if best == None or best[0].getFitness() > best_ind.getFitness():
-                        best = (best_ind, tmp)
-    print("\nMejor individuo")
-    print(best[1])
-    print(best[0])
-    best[0].getFuzzy().plot()
+    with open('resultados_dcha.txt', 'a') as fichero:
+        fichero.write("\n\n")
+        for semilla in list_semillas:
+            for ind in list_ind:
+                for gen in list_gen:
+                    for ea, op in zip(list_ea, list_op):
+                        print("\n\nNUEVA EJECUCIÓN")
+                        #configurar semilla
+                        np.random.seed(semilla)
+                        #ejecucion
+                        best_ind = execution(ea, semilla, ind, gen)
+                        #mostrar datos
+                        tmp = f"semilla: {semilla}\tnº ind: {ind}\t nº gen: {gen}\top: {op}\n"
+                        print(tmp)
+                        #print(best_ind.getVector())
+                        #print(best_ind.getFitness())
+                        print(best_ind)
+                        print("\n")
+                        fichero.write(tmp)
+                        fichero.write(str(best_ind))
+                        #fichero.write(str(best_ind.getFitness()))
+                        fichero.write("\n")
+                        del best_ind
 
 
 if __name__ == '__main__':

@@ -76,6 +76,11 @@ class EvolutionaryAlgorithm:
             # Reemplazar la población actual con los mejores individuos de la descendencia
             initial_population.setPopulation(offspring)
 
+        toolbox.unregister("evaluate")
+        toolbox.unregister("select")
+        toolbox.unregister("mate")
+        toolbox.unregister("mutate")
+        toolbox.unregister("reemplazo")
         #print(initial_population.best())
         #initial_population.best().getFuzzy().plot()
         return initial_population.best()
