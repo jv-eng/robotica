@@ -76,7 +76,7 @@ def main():
     list_gen = [10]
     list_ind = [5]
     #ejecucion
-    with open('resultados_dcha.txt', 'a') as fichero:
+    with open('resultados_izq.txt', 'a') as fichero:
         fichero.write("\n\n")
         for semilla in list_semillas:
             for ind in list_ind:
