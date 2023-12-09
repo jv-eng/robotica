@@ -49,32 +49,19 @@ def execution(ea,semilla, ind, gen):
         print("no simulation is started")"""
 
 def main():
-    """list_ea = [ea1, ea2, ea3, ea4, ea5, ea6, ea7, ea8]
+    list_ea = [ea1, ea2, ea3, ea4, ea5, ea6, ea7, ea8]
     list_op = [
         "Torneo, 1 punto, uniforme, generacional", "Torneo, 1 punto, gaussiana, generacional", "Torneo, 2 puntos, uniforme, generacional",
         "Torneo, 2 puntos, gaussiana, generacional", "Torneo, 1 punto, uniforme, elitista", "Torneo, 1 punto, gaussiana, elitista",
         "Torneo, 2 puntos, uniforme, elitista", "Torneo, 2 puntos, uniforme, elitista"
-        ]"""
-    list_ea = [ea1, ea2, ea3]
-    list_op = [
-        "Torneo, 1 punto, uniforme, generacional", "Torneo, 1 punto, gaussiana, generacional", "Torneo, 2 puntos, uniforme, generacional"
         ]
-    """list_ea = [ea4, ea5, ea6]
-    list_op = [
-        "Torneo, 2 puntos, gaussiana, generacional", "Torneo, 1 punto, uniforme, elitista", "Torneo, 1 punto, gaussiana, elitista"
-        ]"""
-    """list_ea = [ea7, ea8]
-    list_op = [
-        "Torneo, 2 puntos, uniforme, elitista", "Torneo, 2 puntos, uniforme, elitista"
-        ]"""
-    
-    """list_semillas = [0, 45, 90]
-    list_gen = [10, 12]
+    list_semillas = [0, 45, 90]
+    list_gen = [10, 15]
     list_ind = [5, 8]
-    best = (execution(ea1, 0, 2, 1), list_op[1], f"semilla: {0}\tnº ind: {2}\t nº gen: {1}\top: {list_op[0]}")"""
-    list_semillas = [45]
-    list_gen = [10]
-    list_ind = [5]
+    best = (execution(ea1, 0, 2, 1), list_op[1], f"semilla: {0}\tnº ind: {2}\t nº gen: {1}\top: {list_op[0]}")
+    list_semillas = [90]
+    list_gen = [12]
+    list_ind = [8]
     #ejecucion
     with open('resultados_izq.txt', 'a') as fichero:
         fichero.write("\n\n")
